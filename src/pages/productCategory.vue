@@ -1,5 +1,5 @@
 <template>
-  <div class="basetable" v-loading="loading" element-loading-text="拼命加载中">
+  <div class="basetable"  element-loading-text="拼命加载中">
     <div class="selectMenu">
     <el-input
     class="search"
@@ -11,61 +11,39 @@
       <el-button type="primary" @click="add" class="add">新增</el-button>
       <el-dialog title="" :visible.sync="dialogFormVisible">
         <el-form :model="form">
-          <el-form-item label="名称" :label-width="formLabelWidth">
+          <el-form-item label="商品名称" :label-width="formLabelWidth">
             <el-input v-model="form.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="类目" :label-width="formLabelWidth">
-            <el-select v-model="form.category" placeholder="请选择所属类目">
-              <el-option label="男生最爱"></el-option>
-              <el-option label="最热"></el-option>
-              <el-option label="女生最爱"></el-option>
-              <el-option label="难吃的菜"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="价格" :label-width="formLabelWidth">
-            <el-input v-model="form.price" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="卖家电话" :label-width="formLabelWidth">
-            <el-input v-model="form.phone" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="form.description" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="图片url地址" :label-width="formLabelWidth">
-            <el-input v-model="form.picUrl" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+          <el-button type="primary" @click="addSure">确 定</el-button>
         </div>
       </el-dialog>
     </div>
     <div class="tableMain">
-         <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" height="100%" border style="width: 100%">
-            <el-table-column prop="categoryId" label="类目id">
+         <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" height="550px" border style="width: 100%">
+            <el-table-column prop="category_id" label="类目id">
             </el-table-column>
-            <el-table-column prop="productName" label="商品名称">
+            <el-table-column prop="category_name" label="商品名称">
             </el-table-column>
-            <el-table-column prop="categoryNumber" label="类目编号">
+            <el-table-column prop="update_time" label="创建时间">
             </el-table-column>
-            <el-table-column prop="creationTime" label="创建时间">
-            </el-table-column>
-            <el-table-column prop="changeTime" label="修改时间">
-            </el-table-column>
-            <el-table-column label="操作" width="150">
+            <!-- <el-table-column label="操作" width="170">
                 <template slot-scope="scope">
-                    <el-button size="small" type="danger" @click="handleDelete(slot-scope.$index, slot-scope.row)">操作
+                    <el-button size="small" type="danger" @click="handleDelete(slot-scope.$index, slot-scope.row)">删除
+                    </el-button>
+                    <el-button size="small" type="danger" @click="handleUpdate(slot-scope.$index, slot-scope.row)">修改
                     </el-button>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
     </div>
     <div class="page">
       <el-pagination 
           @size-change="handleSizeChange" 
           @current-change="handleCurrentChange" 
-          :current-page="currentPage" 
+          :current-page="page" 
           :page-size='pageSize' 
           layout="prev, pager, next, jumper" 
           :total="tableData.length">
@@ -77,6 +55,7 @@
 
 <script type="text/ecmascript-6">
 import { reformat } from '../common/reformartDate'
+import axios from 'axios'
 
 export default {
   data() {
@@ -85,84 +64,52 @@ export default {
       dialogFormVisible:false,
       form: {
           name: '',
-          category: '',
-          price:'',
-          phone:'',
-          description:'',
-          picUrl:''
-
+          // category: '',
+          // price:'',
+          // phone:'',
+          // description:'',
+          // picUrl:''
         },
         formLabelWidth: '120px',
-      categoryInfo: [{
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞面',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-      {
-          categoryId:'3',
-          productName:'鸡捞',
-          categoryNumber:'5',
-          creationTime:'2018-7-30 15:08:44',
-          changeTime:'2018-7-30 15:08:44'
-      },
-     ],
-     
+    categoryInfo:[],
       currentPage: 1,
       currentIndex: '',
-      pageSize:4,
+      pageSize:5,
       total:1000,
       input10:"",
-      tableData: ''
+      tableData: [],
+      page:1
     }
   },
-  created() {
-    
-    setTimeout(() => {
-      this.loading = false
-    }, 1500)
+ mounted() {
+    this.getOrderList()
     this.tableData = this.categoryInfo;
-    
   },
   methods: {
+      addSure() {
+          this.dialogFormVisible = false
+          console.log(this.form.name);
+          axios.post('http://localhost:3004/seller/category/save', {
+            categoryName:this.form.name
+          })
+      },
+      getOrderList() {
+        var that = this;
+        axios.get('http://localhost:3004/seller/category')
+        .then(res => {
+          let data = res.data.data;
+          for(let i = 0; i < data.length; i++) {
+            that.categoryInfo[i]={};
+            that.categoryInfo[i] = data[i]
+          }
+          console.log(this.categoryInfo);
+          that.page++;   
+        }).catch(err => {console.log(err)})
+      },
     add(){
       this.dialogFormVisible = true
+      
+
     },
     showTime() {
       this.$alert(this.value6, '起止时间', {
@@ -177,7 +124,7 @@ export default {
     },
     search() {
       var search = this.categoryInfo.filter(order => {
-          if(order.productName == this.input10.trim()) {
+          if(order.category_name == this.input10.trim()) {
             return order;
           }
       })

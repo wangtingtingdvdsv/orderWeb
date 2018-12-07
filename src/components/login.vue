@@ -53,7 +53,7 @@ import $ from 'jquery'
         var _this = this;
         if (this.checkValidity()) {
             $.ajax({
-              url: 'http://localhost:9008/admin/login',
+              url: 'http://localhost:3004/admin/login',
               type: 'post',
               data:{
                   userName: _this.userName, 

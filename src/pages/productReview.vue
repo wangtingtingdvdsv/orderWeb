@@ -1,40 +1,28 @@
 <template>
 
-  <div class="basetable" v-loading="loading" element-loading-text="拼命加载中">
+  <div class="basetable" >
     <div class="selectMenu">
     <el-input
     class="search"
-      placeholder="请输入商品名称进行搜索"
+      placeholder="请输入商品id进行搜索"
       v-model="input10"
       clearable>
     </el-input>
       <el-button type="primary" @click="search">搜索</el-button>
     </div>
     <div class="tableMain">
-         <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" height="100%" border style="width: 100%">
-            <el-table-column prop="productId" label="商品id">
+         <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" height="550px" border style="width: 100%">
+            <el-table-column prop="comment_id" label="评价id">
             </el-table-column>
-            <el-table-column prop="productName" label="商品名称">
+            <el-table-column prop="product_id" label="商品id">
             </el-table-column>
-            <el-table-column prop="productQualityReview" label="商品质量评价（单位：星-人）">
-                <template slot-scope="scope">
-                    <p>1星：{{slot-scope.row.productQualityReview.one}} &nbsp;&nbsp; 2星：{{slot-scope.row.productQualityReview.two}} </p>
-                    <p>3星：{{slot-scope.row.productQualityReview.three}} &nbsp;&nbsp; 4星：{{slot-scope.row.productQualityReview.four}}&nbsp;&nbsp; 5星：{{slot-scope.row.productQualityReview.five}}</p>
-                </template>
+            <el-table-column prop="quality_score" label="商品质量评价（单位：星-人）">
+
             </el-table-column>
-            <el-table-column prop="productTasteReview" label="商品口味评价（单位：星-人）">
-                <template slot-scope="scope">
-                    <p>1星：{{slot-scope.row.productTasteReview.one}} &nbsp;&nbsp; 2星：{{slot-scope.row.productTasteReview.two}} </p>
-                    <p>3星：{{slot-scope.row.productTasteReview.three}} &nbsp;&nbsp;4星：{{slot-scope.row.productTasteReview.four}}&nbsp;&nbsp; 5星：{{slot-scope.row.productTasteReview.five}}</p>
-                </template>
+            <el-table-column prop="taste_score" label="商品口味评价（单位：星-人）">
+
             </el-table-column>
-            <el-table-column prop="productPackageReview" label="商品包装评价（单位：星-人）">
-                <template slot-scope="scope">
-                    <p>1星：{{slot-scope.row.productPackageReview.one}}&nbsp;&nbsp; 2星：{{slot-scope.row.productPackageReview.two}} </p>
-                    <p>3星：{{slot-scope.row.productPackageReview.three}}&nbsp;&nbsp; 4星：{{slot-scope.row.productPackageReview.four}}&nbsp;&nbsp; 5星：{{slot-scope.row.productPackageReview.five}}</p>
-                </template>
-            </el-table-column>
-            <el-table-column prop="generalReview" label="总评">
+            <el-table-column prop="packing_score" label="商品包装评价（单位：星-人）">
             </el-table-column>
         </el-table>
     </div>
@@ -42,7 +30,7 @@
       <el-pagination 
           @size-change="handleSizeChange" 
           @current-change="handleCurrentChange" 
-          :current-page="currentPage" 
+          :current-page="page" 
           :page-size='pageSize' 
           layout="prev, pager, next, jumper" 
           :total="tableData.length">
@@ -53,213 +41,56 @@
 </template>
 
 <script type="text/ecmascript-6">
+import axios from 'axios'
 import { reformat } from '../common/reformartDate'
-import $ from 'jquery'
 export default {
   data() {
     return {
       loading: true,
       input10:"",
-      tableData:'',
-      reviewInfo: [{
-            productId:'180989312',
-            productName:'鸡捞',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        },
-        {
-            productId:'180989312',
-            productName:'鸡捞面',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        },
-        {
-            productId:'180989312',
-            productName:'鸡捞面',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        },
-        {
-            productId:'180989312',
-            productName:'鸡捞面',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        },
-        {
-            productId:'180989312',
-            productName:'鸡捞面',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        },
-        {
-            productId:'180989312',
-            productName:'鸡捞面',
-            productQualityReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productTasteReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            productPackageReview:{
-                one:'2',
-                two:'3',
-                three:'4',
-                four:'1',
-                five:'2'
-            },
-            generalReview:'34'
-        }
-      ],
-      cityList: [
-        { name: '国王大道' },
-        { name: '尼泊尔' },
-        { name: '沃斯卡亚工业区' },
-        { name: '花村' },
-        { name: '尼泊尔' },
-        { name: '月球基地' },
-      ],
+      tableData:[],
+      reviewInfo: [],
+
       dialogFormVisible: false,
       formLabelWidth: '80px',
       form: {},
       value6: '',
       currentPage: 1,
       currentIndex: '',
-      pageSize:4,
+      pageSize:5,
       total:1000,
+      page:1
     }
   },
   created() {
-    setTimeout(() => {
-      this.loading = false
-    }, 1500)
+    this.getOrderList()
     this.tableData = this.reviewInfo;
   },
   methods: {
-    showTime() {
-      this.$alert(this.value6, '起止时间', {
-        confirmButtonText: '确定',
-        callback: action => {
-          this.$message({
-            type: 'info',
-            message: '已显示'
-          })
-        }
-      })
-    },
+      getOrderList() {
+        var that = this;
+        axios.get('http://localhost:3004/seller/comment')
+        .then(res => {
+          let data = res.data.data;
+          for(let i = 0; i < data.length; i++) {
+            that.reviewInfo[i]={};
+            that.reviewInfo[i] = data[i]
+          }
+          console.log(this.reviewInfo);
+          that.page++;   
+        }).catch(err => {console.log(err)})
+      },
     search() {
+      console.log(this.input10.trim())
+      console.log( this.reviewInfo);
       var search = this.reviewInfo.filter(order => {
-          if(order.productName == this.input10.trim()) {
+        
+          if( order.product_id === this.input10.trim()) {
+            console.log("时");
             return order;
           }
       })
+      console.log(search);
         this.tableData = search;
     },
     update() {

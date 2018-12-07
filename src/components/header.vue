@@ -35,7 +35,7 @@ import $ from 'jquery'
         var _this = this;
 
              $.ajax({
-              url: 'http://localhost:9008/admin/logout',
+              url: 'https://wangtingting.top:9005/admin/logout',
               type: 'post',
 
               xhrFields: {
