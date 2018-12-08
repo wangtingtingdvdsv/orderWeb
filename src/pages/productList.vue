@@ -17,10 +17,12 @@
           </el-form-item>
           <el-form-item label="类目" :label-width="formLabelWidth">
             <el-select v-model="form.category" placeholder="请选择所属类目">
-              <el-option label="男生最爱" value="男生最爱"></el-option>
-              <el-option label="最热" value="最热"></el-option>
-              <el-option label="女生最爱" value="女生最爱"></el-option>
-              <el-option label="难吃的菜" value="难吃的菜"></el-option>
+                <el-option
+                  v-for="item in categorys"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="价格" :label-width="formLabelWidth">
@@ -76,14 +78,14 @@
             </el-table-column>
             <el-table-column prop="update_time" label="创建时间">
             </el-table-column>
-            <!-- <el-table-column label="操作" width="170">
+            <el-table-column label="操作" width="170">
                 <template scope="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">修改
                     </el-button>
-                    <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">下架
+                    <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除
                     </el-button>
                 </template>
-            </el-table-column> -->
+            </el-table-column>
         </el-table>
     </div>
     <div class="page">
@@ -108,7 +110,6 @@ import { reformat } from '../common/reformartDate'
 export default {
   data() {
     return {
-      key:'',
       postData:{},
       actionPath:'http://upload.qiniup.com/',
       dialogFormVisible:false,
@@ -117,6 +118,7 @@ export default {
       tableData:[],
       listInfo: [],
       formLabelWidth: '120px',
+      categorys:[],
       form: {
              name: '',
              category: '',
@@ -128,13 +130,15 @@ export default {
       currentPage: 1,
       currentIndex: '',
       pageSize:5,
-      page:1,
-      total:1000
+      page:0,
+      total:1000,
+      changeProductId:''//要修改的商品的Id
     }
   },
   mounted() {
     this.getOrderList()
     this.tableData = this.listInfo;
+    this.getCategorys();
   },
   created() {
     var token;
@@ -150,20 +154,39 @@ export default {
       console.log("-----------", token);
   },
   methods: {
+    getCategorys() {
+       axios.get('https://wangtingting.top:9005/seller/category')
+        .then(res => {
+          let data = res.data.data;
+          for(let i = 0; i < data.length; i++) {
+            this.categorys[i] = {};
+            this.categorys[i].value = data[i].category_id;
+            this.categorys[i].label = data[i].category_name;
+          }
+        
+          console.log("%", JSON.stringify(this.categorys));
+        }).catch(err => {console.log(err)})
+    },
     addSure() {
           this.dialogFormVisible = false;
-          axios.post('http://localhost:3004/seller/product/save', this.form)
+          let productInfo = this.form;
+          console.log("---------", this.form);
+          console.log("$$$$", JSON.stringify(productInfo));
+          if(this.changeProductId) {
+            productInfo.productId = this.changeProductId;
+          }
+          axios.post('https://wangtingting.top:9005/seller/product/save', productInfo)
     },
       getOrderList() {
         var that = this;
-        axios.get('http://localhost:3004/seller/product/list')
+        axios.get('https://wangtingting.top:9005/seller/product/list')
         .then(res => {
           let data = res.data.data;
           for(let i = 0; i < data.length; i++) {
             that.listInfo[i]={};
             that.listInfo[i] = data[i]
           }
-          console.log(this.listInfo);
+          console.log(JSON.stringify(this.listInfo));
           that.page++;   
         }).catch(err => {console.log(err)})
       },
@@ -200,17 +223,37 @@ export default {
       this.dialogFormVisible = false
     },
     handleEdit(index, row) {
-      this.form = this.tableData[index]
-      this.currentIndex = index
-      this.dialogFormVisible = true
+      this.changeProductId = row.product_id;
+      this.form.name = row.product_name;
+      this.form.description = row.product_description;
+      this.form.price = row.product_price;
+      this.form.picUrl = row.product_icon;
+      this.form.category = row.category_type;
+      console.log("%%%%%%%", this.form.category);
+      this.form.phone = row.seller_phone;
+      this.imageUrl=this.form.picUrl;
+      
+      //console.log(product_id);
+        //alert(this.form);
+      // this.currentIndex = index
+       this.dialogFormVisible = true
+      //alert(index);
     },
     handleDelete(index, row) {
+     
+      this.changeProductId = row.product_id;
+      console.log("index", this.changeProductId);
+     // console.log('row', JSON.stringify(row));
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.tableData.splice(index, 1)
+
+        this.tableData.splice(index, row)
+        axios.post('https://wangtingting.top:9005/seller/product/delete', {
+          productId:this.changeProductId
+        })
         this.$message({
           type: 'success',
           message: '删除成功!'

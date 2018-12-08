@@ -59,7 +59,7 @@ export default {
       currentIndex: '',
       pageSize:5,
       total:1000,
-      page:1
+      page:0
     }
   },
   created() {
@@ -69,7 +69,7 @@ export default {
   methods: {
       getOrderList() {
         var that = this;
-        axios.get('http://localhost:3004/seller/comment')
+        axios.get('https://wangtingting.top:9005/seller/comment')
         .then(res => {
           let data = res.data.data;
           for(let i = 0; i < data.length; i++) {

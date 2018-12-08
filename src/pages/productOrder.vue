@@ -76,7 +76,7 @@ export default {
       currentIndex: '',
       pageSize:5,
       total:1000,
-      page:1
+      page:0
     }
   },
   mounted() {
@@ -86,7 +86,7 @@ export default {
   methods: {
     getOrderList() {
       var that = this;
-      axios.get('http://localhost:3004/seller/order/list')
+      axios.get('https://wangtingting.top:9005/seller/order/list')
       .then(res => {
         let data = res.data.data;
        

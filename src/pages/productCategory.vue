@@ -78,31 +78,31 @@ export default {
       total:1000,
       input10:"",
       tableData: [],
-      page:1
+      page:0
     }
   },
  mounted() {
-    this.getOrderList()
+    this.getCategorys()
     this.tableData = this.categoryInfo;
   },
   methods: {
       addSure() {
           this.dialogFormVisible = false
           console.log(this.form.name);
-          axios.post('http://localhost:3004/seller/category/save', {
+          axios.post('https://wangtingting.top:9005/seller/category/save', {
             categoryName:this.form.name
           })
       },
-      getOrderList() {
+      getCategorys() {
         var that = this;
-        axios.get('http://localhost:3004/seller/category')
+        axios.get('https://wangtingting.top:9005/seller/category')
         .then(res => {
           let data = res.data.data;
           for(let i = 0; i < data.length; i++) {
             that.categoryInfo[i]={};
             that.categoryInfo[i] = data[i]
           }
-          console.log(this.categoryInfo);
+          console.log("categoryInfo", this.categoryInfo);
           that.page++;   
         }).catch(err => {console.log(err)})
       },
