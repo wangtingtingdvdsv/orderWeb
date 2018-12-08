@@ -35,9 +35,9 @@
           <el-form-item label="图片地址" :label-width="formLabelWidth">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :action="actionPath"
                 accept="image/jpeg,image/gif,image/png"
-             
+                :data="postData"
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
@@ -48,7 +48,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+          <el-button type="primary" @click="addSure">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -101,19 +101,30 @@
 </template>
 
 <script type="text/ecmascript-6">
+ import {genUpToken} from "../qiniuToken";
 import axios from 'axios'
 import { reformat } from '../common/reformartDate'
 
 export default {
   data() {
     return {
+      key:'',
+      postData:{},
+      actionPath:'http://upload.qiniup.com/',
       dialogFormVisible:false,
       imageUrl: '',
       input10:"",
       tableData:[],
       listInfo: [],
       formLabelWidth: '120px',
-      form: {},
+      form: {
+             name: '',
+             category: '',
+             price:'',
+             phone:'',
+             description:'',
+             picUrl:''
+      },
       currentPage: 1,
       currentIndex: '',
       pageSize:5,
@@ -125,7 +136,24 @@ export default {
     this.getOrderList()
     this.tableData = this.listInfo;
   },
+  created() {
+    var token;
+      var policy = {};
+      var bucketName = 'order';
+      var AK ='2XzB02eDUbBxbayGPpkGuHbXETUZBPoyDHkHsWQs';
+      var SK = 'EcvNdT0sTPTohnIVsQ_wy-pjDHZ-9MXmqn42Vlsp';
+      var deadline = Math.round(new Date().getTime() / 1000) + 3600;
+      policy.scope = bucketName;
+      policy.deadline = deadline;
+      token=genUpToken(AK, SK, policy);
+      this.postData.token=token;
+      console.log("-----------", token);
+  },
   methods: {
+    addSure() {
+          this.dialogFormVisible = false;
+          axios.post('http://localhost:3004/seller/product/save', this.form)
+    },
       getOrderList() {
         var that = this;
         axios.get('http://localhost:3004/seller/product/list')
@@ -140,11 +168,12 @@ export default {
         }).catch(err => {console.log(err)})
       },
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+    
+        this.imageUrl='http://pjaz0owmi.bkt.clouddn.com/'+res.key
+        this.form.picUrl=this.imageUrl;
       
       },
       beforeAvatarUpload(file) {
-
         const isLt2M = file.size / 1024 / 1024 < 2;
 
         if (!isLt2M) {
@@ -154,6 +183,7 @@ export default {
       }, 
     add() {
             this.dialogFormVisible = true
+           
     },
 
     search() {
