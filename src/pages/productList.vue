@@ -192,7 +192,7 @@ export default {
       },
       handleAvatarSuccess(res, file) {
     
-        this.imageUrl='http://pjaz0owmi.bkt.clouddn.com/'+res.key
+        this.imageUrl='http://img.wangtingting.top/'+res.key
         this.form.picUrl=this.imageUrl;
       
       },
