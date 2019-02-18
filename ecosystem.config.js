@@ -18,8 +18,7 @@ module.exports = {
       host : '120.79.192.19',
       ref  : 'origin/master',
       repo : 'git@github.com:wangtingtingdvdsv/orderWeb.git',
-      path : '/wangtingting/project/test',
-      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
+      path : '/wangtingting/project/test'
     }
   }
 };
