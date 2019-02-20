@@ -9,3 +9,7 @@ git push origin master
 echo "***************************"
 echo git status
 git status
+echo "***************************"
+echo npm run build
+npm run build
+
